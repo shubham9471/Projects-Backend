@@ -4,8 +4,7 @@
   "description": "repository for backend cohort - Radium",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index"
   },
   "repository": {
     "type": "git",
@@ -22,13 +21,8 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "mongoose": "^6.0.12"
-    
-
-  }, 
-  "devDependencies" : {
-    "nodemon": "^2.0.15"
   },
-  "scripts": {
-    "start" : "nodemon index"
+  "devDependencies": {
+    "nodemon": "^2.0.15"
   }
 }
