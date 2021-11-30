@@ -14,7 +14,7 @@ const mid1= async function(req, res, next)
         if(decodedtoken)
         {
             req.decodedtoken=decodedtoken
-            next()
+            next();
         }else{
             res.status(404).send({Message:"Not valid Token"})
         }

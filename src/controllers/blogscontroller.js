@@ -41,14 +41,15 @@ const getBlogs = async function (req, res) {
 }
 
 const update = async function (req, res) {
+    let blogid = req.params.blogId
+    let info =  await BlogsModel.findOne({_id : blogid})
+    console.log(info)
 
+    if (req.decodedtoken.userId == info.authorId) {
 
-    console.log(req.decodedtoken._id)
-    if (req.decodedtoken._id == req.params.blogId.authorId) {
-
-        let userbody = await BlogsModel.findOne({ _id: req.params.blogId })
+        let userbody = await BlogsModel.findOne({ _id: blogid })
         if (userbody) {
-            if (userbody.isDeleted === false) {
+            if (userbody.isDeleted == false) {
 
                 let tempbody = await BlogsModel.findOneAndUpdate({ _id: userbody._id }, { $set: { "title": req.body.title, "body": req.body.body, "category": req.body.category }, $push: { "tags": req.body.tags, "subcategory": req.body.subcategory } }, { new: true })
 
@@ -80,31 +81,42 @@ const update = async function (req, res) {
 }
 
 const DeleteBlogs = async function (req, res) {
-    console.log(req.decodedtoken.userId)
-    console.log(req.params.deleteId)
-    //userid is equals to author id. for reference see the token genereation api.
-    if (req.decodedtoken.userId == req.params.deleteId.authorId) {
+    deleteID = req.params.deleteId
 
-        let blogId = req.params.deleteId
-        let checking = await BlogsModel.findOneAndUpdate({ _id: blogId, isDeleted: false }, { isDeleted: true, deletedAt: Date() })
-        if (checking) {
-            res.status(200).send({ msg: "Deleted done" })
+    let tempinfo =  await BlogsModel.findOne({_id: deleteID})
 
-        } else {
-            res.status(404).send({ status: false, msg: "Invalid BlogId" })
+    if (tempinfo){
+        //userid is equals to author id. for reference see the token genereation api.
+        if (req.decodedtoken.userId == tempinfo.authorId) {
+
+            // let blogId = req.params.deleteId
+            let checking = await BlogsModel.findOneAndUpdate({ _id: deleteID, isDeleted: false }, { isDeleted: true, deletedAt: Date() })
+            if (checking) {
+                res.status(200).send({ msg: "Deleted done" })
+
+            } else {
+                res.status(404).send({ status: false, msg: "Invalid BlogId" })
+            }
+        } 
+        
+        else {
+            res.status(404).send({ err: "Not a valid token at all" })
         }
-    } else {
-        res.status(404).send({ err: "Not a valid token at all" })
+
     }
+
+    else{
+        res.status(500).send({msg : "Id  not correct"})
+    }
+
 }
 
 const DeleteBlogsbyQuery = async function (req, res) {
-    console.log(req.query.authorId)
-    console.log(req.decodedtoken.userId)
+    
     if (req.decodedtoken.userId == req.query.authorId) {
-        let info = req.query
+        let info = req.query 
         let userbody = await BlogsModel.findOne(info)
-        let tempdata = await BlogsModel.findOneAndUpdate({ id: userbody._id, isDeleted: false }, { isDeleted: true, deletedAt: Date() })
+        let tempdata = await BlogsModel.findOneAndUpdate({ _id: userbody._id, isDeleted: false }, { isDeleted: true, deletedAt: Date() })
         if (tempdata) {
 
             res.status(200).send({ Msg: "Done", data: {} })
