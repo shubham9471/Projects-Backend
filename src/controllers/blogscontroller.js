@@ -116,7 +116,7 @@ const DeleteBlogsbyQuery = async function (req, res) {
     if (req.decodedtoken.userId == req.query.authorId) {
         let info = req.query 
         console.log(info)
-        let userbody = await BlogsModel.findOne({author_id :info.authorId})
+        let userbody = await BlogsModel.findOne({authorId :info.authorId})
         console.log(userbody)
         let tempdata = await BlogsModel.findOneAndUpdate({ _id: userbody._id, isDeleted: false }, { isDeleted: true, deletedAt: Date() })
         if (tempdata) {
