@@ -12,4 +12,12 @@ router.get('/test-me', function (req, res) {
 router.post('/createAuthor',AuthorController.createAuthor)
 router.post('/createBlogs',BlogsController.createBlogs)
 
+router.get('/getBlogs',BlogsController.getBlogs)
+
+router.put('/updatedUserInfo/:blogId', BlogsController.update) 
+
+router.get('/Deletedata/:delId', BlogsController.Deletedata) 
+
+router.get('/CompleteDeletedata', BlogsController.CompleteDeletedata) 
+
 module.exports = router;
