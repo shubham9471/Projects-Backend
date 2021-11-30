@@ -115,11 +115,13 @@ const DeleteBlogsbyQuery = async function (req, res) {
     
     if (req.decodedtoken.userId == req.query.authorId) {
         let info = req.query 
-        let userbody = await BlogsModel.findOne(info)
+        console.log(info)
+        let userbody = await BlogsModel.findOne({author_id :info.authorId})
+        console.log(userbody)
         let tempdata = await BlogsModel.findOneAndUpdate({ _id: userbody._id, isDeleted: false }, { isDeleted: true, deletedAt: Date() })
         if (tempdata) {
 
-            res.status(200).send({ Msg: "Done", data: {} })
+            res.status(200).send({ Msg: "Done", data: {} }) 
         } else {
             res.status(404).send({ err: "data might have been already deleted" })
         }
