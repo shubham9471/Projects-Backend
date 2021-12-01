@@ -3,33 +3,46 @@ const AuthorModel = require("../models/Author_Model")
 const mongoose = require("mongoose")
 
 const createBlogs = async function (req, res) {
+    if (req.decodedtoken.userId == req.body.authorId){
+        let data = req.body
 
-    let data = req.body
-
-    let Author = await AuthorModel.findById(data.authorId)
-    if (!Author) {
-        res.status(400).send({ status: false, message: "Author_Id not found" })
-    } else {
-        let savedblog = await BlogsModel.create(data)
-        res.status(201).send({ status: true, data: savedblog })
+        let Author = await AuthorModel.findById(data.authorId)
+        if (!Author) {
+            res.status(400).send({ status: false, message: "Author_Id not found" })
+        } else {
+            let savedblog = await BlogsModel.create(data)
+            res.status(201).send({ status: true, data: savedblog })
+        }
+    }
+    else{
+        res.status(400).send({status : false, err: "AuthorID not provided or is incorrect"})
     }
 }
 
 
 const getBlogs = async function (req, res) {
     try {
+        if (req.decodedtoken.userId == req.query.authorId){
 
-        let info = req.query
-        let data = await BlogsModel.findOne(info)
-        if (data) {
-            if (data.isDeleted == false && data.isPublished == true) {
-                res.status(200).send({ Status: "Success", Info: data })
+            let info = req.query
+            
+            let data = await BlogsModel.findOne({authorid : info.authorId})
+            if (data) {
+                if (data.isDeleted == false && data.isPublished == true) {
+                    res.status(200).send({ Status: "Success", Info: data })
 
-            } else {
-                res.status(500).send({ err: "either book isn't published or data is deleted" })
+                } else {
+                    res.status(500).send({ err: "either book isn't published or data is deleted" })
+                }
+            } 
+            
+            else {
+                res.status(404).send({ err: "provide an valid Input details" })
             }
-        } else {
-            res.status(404).send({ err: "provide an valid Input details" })
+        }
+        
+        else{
+            res.status(400).send({err: "You are trying to access a different user account"})
         }
     }
     catch (err) {
@@ -115,13 +128,13 @@ const DeleteBlogsbyQuery = async function (req, res) {
     
     if (req.decodedtoken.userId == req.query.authorId) {
         let info = req.query 
-        console.log(info)
+        
         let userbody = await BlogsModel.findOne({authorId :info.authorId})
-        console.log(userbody)
+        
         let tempdata = await BlogsModel.findOneAndUpdate({ _id: userbody._id, isDeleted: false }, { isDeleted: true, deletedAt: Date() })
         if (tempdata) {
 
-            res.status(200).send({ Msg: "Done", data: {} }) 
+            res.status(200).send({ Msg: "Done", data: {} })   
         } else {
             res.status(404).send({ err: "data might have been already deleted" })
         }
