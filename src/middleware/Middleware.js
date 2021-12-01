@@ -10,13 +10,11 @@ const mid1= async function(req, res, next)
         }else
         {
             let decodedtoken = jwt.verify(token, 'Group4')
-            //console.log(decodedtoken)
+            
             if(decodedtoken)
             {
                 req.decodedtoken=decodedtoken
                 next();
-            }else{
-                res.status(404).send({Message:"Not valid Token"})
             }
         }
     }
