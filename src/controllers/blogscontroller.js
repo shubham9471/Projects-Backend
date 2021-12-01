@@ -3,20 +3,17 @@ const AuthorModel = require("../models/Author_Model")
 const mongoose = require("mongoose")
 
 const createBlogs = async function (req, res) {
-    if (req.decodedtoken.userId == req.body.authorId){
-        let data = req.body
+    
+    let data = req.body
 
-        let Author = await AuthorModel.findById(data.authorId)
-        if (!Author) {
-            res.status(400).send({ status: false, message: "Author_Id not found" })
-        } else {
-            let savedblog = await BlogsModel.create(data)
-            res.status(201).send({ status: true, data: savedblog })
-        }
+    let Author = await AuthorModel.findById(data.authorId)
+    if (!Author) {
+        res.status(400).send({ status: false, message: "Author_Id not found" })
+    } else {
+        let savedblog = await BlogsModel.create(data)
+        res.status(201).send({ status: true, data: savedblog })
     }
-    else{
-        res.status(400).send({status : false, err: "AuthorID not provided or is incorrect"})
-    }
+ 
 }
 
 
@@ -55,42 +52,37 @@ const getBlogs = async function (req, res) {
 
 const update = async function (req, res) {
     let blogid = req.params.blogId
-    let info =  await BlogsModel.findOne({_id : blogid})
-    console.log(info)
-
-    if (req.decodedtoken.userId == info.authorId) {
-
-        let userbody = await BlogsModel.findOne({ _id: blogid })
-        if (userbody) {
-            if (userbody.isDeleted == false) {
-
-                let tempbody = await BlogsModel.findOneAndUpdate({ _id: userbody._id }, { $set: { "title": req.body.title, "body": req.body.body, "category": req.body.category }, $push: { "tags": req.body.tags, "subcategory": req.body.subcategory } }, { new: true })
 
 
-                if (req.body.isPublished === true) {
-                    let newdata = await BlogsModel.findOneAndUpdate({ _id: userbody._id }, { $set: { "isPublished": req.body.isPublished, "publishedAt": Date.now() } }, { new: true })
-                    res.status(200).send({ status: true, data: newdata })
-                }
+    let userbody = await BlogsModel.findOne({ _id: blogid })
+    if (userbody) {
+        if (userbody.isDeleted == false) {
 
-                else {
-                    res.status(200).send({ status: true, data: tempbody })
+            let tempbody = await BlogsModel.findOneAndUpdate({ _id: userbody._id }, { $set: { "title": req.body.title, "body": req.body.body, "category": req.body.category }, $push: { "tags": req.body.tags, "subcategory": req.body.subcategory } }, { new: true })
 
-                }
 
+            if (req.body.isPublished === true) {
+                let newdata = await BlogsModel.findOneAndUpdate({ _id: userbody._id }, { $set: { "isPublished": req.body.isPublished, "publishedAt": Date.now() } }, { new: true })
+                res.status(200).send({ status: true, data: newdata })
             }
 
             else {
-                res.status(404).send({ err: "the data is already deleted " })
+                res.status(200).send({ status: true, data: tempbody })
+
             }
+
         }
 
         else {
-            res.status(505).send({ status: false, err: " " })
+            res.status(404).send({ err: "the data is already deleted " })
         }
+    } 
 
-    } else {
-        res.status(404).send({ Message: "Not a token at all" })
+    else {
+        res.status(505).send({ status: false, err: " " })
     }
+
+
 }
 
 const DeleteBlogs = async function (req, res) {
