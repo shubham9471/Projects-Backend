@@ -104,7 +104,7 @@ const DeleteBlogs = async function (req, res) {
 
                 let checking = await BlogsModel.findOneAndUpdate({ _id: deleteID, isDeleted: false }, { isDeleted: true, deletedAt: Date() })
                 if (checking) {
-                    res.status(200).send({ msg: "Deleted done" })
+                    res.status(200).send()
 
                 } else {
                     res.status(404).send({ status: false, msg: "Invalid BlogId" })
@@ -139,7 +139,7 @@ const DeleteBlogsbyQuery = async function (req, res) {
             let tempdata = await BlogsModel.findOneAndUpdate({ _id: userbody._id, isDeleted: false }, { isDeleted: true, deletedAt: Date() })
             if (tempdata) {
 
-                res.status(200).send({ Msg: "Done", data: {} })   
+                res.status(200).send({ Msg: "Deleted", data: {} })   
             } else {
                 res.status(404).send({ err: "data might have been already deleted" })
             }
