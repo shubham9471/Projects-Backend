@@ -52,22 +52,29 @@ const createColleges = async function (req, res) {
                     //     res.status(400).send({status: false, message: 'Name is required'})
                     //     return
                     // }
-        
-        
-                    if(!isValid(fullName)) {
-                        res.status(400).send({status: false, message: 'fullName is required'})
-                        return
-                    }
-        
-        
+
+                    
                     if(!isValid(logo)) {
                         res.status(400).send({status: false, message: 'logo is required'})
                         return
                     }
                     
+                    if(!isValid(fullName)) {
+                        res.status(400).send({status: false, message: 'fullName is required'})
+                        return
+                    }
+                    // cleaning up the full name 
+                    else {
+                        let tempN = req.body.fullName
+                        
+                        let tempname = tempN.replace(/_/g, ' ') // replacing all underscore with space
+                
+                        req.body.fullName = tempname
+                    }
+                    
                     const collegeData = {
-                        name,
-                        fullName,
+                        name ,
+                        fullName ,
                         logo
                     }
                     
