@@ -56,7 +56,7 @@ const createIntern = async function (req, res) {
 
 
         if (!isValid(collegeName)) {
-            res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide valid collegeName. There might be spacing , so try without spacing' })
+            res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide valid collegeName .' })
             return
         }
 
@@ -79,7 +79,7 @@ const createIntern = async function (req, res) {
         const collegeData = await CollegeModel.findOne({name: nm })
 
         if(!collegeData){
-            res.status(400).send({status: false, message: `${nm} is not a valid college name or There might be spacing , so try without spacing`})
+            res.status(400).send({status: false, message: `${nm} is not a valid college name or There might be spacing or letters are in captial`})
         }
 
         else{
@@ -94,8 +94,7 @@ const createIntern = async function (req, res) {
     
             res.status(201).send({ status: true, message: `Intern created successfully`, data: createIntern });
         }
-
-       
+ 
 
     } catch (err) {
         res.status(500).send({ status: false, message: err.message });
@@ -163,13 +162,9 @@ const getAllInterns = async function (req, res) {
                     }
 
                 }
-
-    
             }
             
         }
-
-
 
     }
 
