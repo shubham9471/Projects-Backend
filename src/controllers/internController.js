@@ -1,7 +1,7 @@
 const InternModel = require('../models/internModel')
 const CollegeModel = require('../models/collegeModel')
 
-// creating college
+// creating intern
 
 const createIntern = async function (req, res) {
     const isValid = function (value) {
@@ -80,20 +80,21 @@ const createIntern = async function (req, res) {
 
         if(!collegeData){
             res.status(400).send({status: false, message: `${nm} is not a valid college name or There might be spacing or letters are in captial`})
+            return 
         }
 
-        else{
-            let collegeId = collegeData._id;
-       
-            req.body.collegeId = collegeId;
-            
     
-            const internData = {name, email, mobile, collegeName, collegeId}
+        let collegeId = collegeData._id;
+    
+        req.body.collegeId = collegeId;
         
-            const createIntern = await InternModel.create(internData);
+
+        const internData = {name, email, mobile, collegeName, collegeId}
     
-            res.status(201).send({ status: true, message: `Intern created successfully`, data: createIntern });
-        }
+        const createIntern = await InternModel.create(internData);
+
+        res.status(201).send({ status: true, message: `Intern created successfully`, data: createIntern });
+        
  
 
     } catch (err) {
@@ -113,58 +114,55 @@ const getAllInterns = async function (req, res) {
 
         if(!queryname){
             res.status(400).send({status: false, err: "College Name is required"})
+            return
         }
 
-        else {
-            let propername = queryname.replace(/\s+/g, '') 
+        
+        let propername = queryname.replace(/\s+/g, '') 
 
-            if (propername != queryname){
-                res.status(400).send({status : false, err: "college abbreviation contains space , try writing without any space"})
-            }
-    
-            else{
-                let tempcolgName = queryname
-
-                // in case the query name is not in lowecase then instead of converting in lower case 
-
-                if (tempcolgName != tempcolgName.toLowerCase()){
-                    res.status(400).send({status : false, err: "college abbreviation should be in LowerCase / Small. Write in small letters and try again"})
-                }
-
-                else{
-                    let colgName = tempcolgName
-    
-                    let temp = await CollegeModel.findOne({name : colgName})
-                    
-                    if (!temp){
-                        res.status(400).send({status : false , err: "Invalid parameters: Provide a valid college abbreviation"})
-                    } 
-            
-                    else{
-                        let ID = temp._id
-                        let data = temp
-                        
-                        // INTERN NAMES CAN HAVE MUTIPLE SPACES COZ THERE CAN BE A NAME CALLED RAHUL KUMAR SHAW SO WE PURPOSELY DID NOT REMOVED THE SPACE.
-                        let interns = await InternModel.find({collegeId: ID}).select({_id: 1, name:1,email: 1, mobile: 1})
-                        
-                        if (interns.length == 0){
-                            let details = {name : data.name, fullname : data.fullName, logolink: data.logo, interests : interns}
-                            res.status(200).send({status : true , data: details, msg: "No Interns applied for an internship"})
-                        }
-                        
-                        else{
-                            
-                            let details = {name : data.name, fullname : data.fullName, logolink: data.logo, interests : interns}
-                    
-                            res.status(200).send({status: true, Details: details})
-                        }
-                        
-                    }
-
-                }
-            }
-            
+        if (propername != queryname){
+            res.status(400).send({status : false, err: "college abbreviation contains space , try writing without any space"})
+            return
         }
+    
+        
+        let tempcolgName = queryname
+
+        // in case the query name is not in lowecase then instead of converting in lower case 
+
+        if (tempcolgName != tempcolgName.toLowerCase()){
+            res.status(400).send({status : false, err: "college abbreviation should be in LowerCase / Small. Write in small letters and try again"})
+            return
+        }
+
+        
+        let colgName = tempcolgName
+
+        let temp = await CollegeModel.findOne({name : colgName})
+        
+        if (!temp){
+            res.status(400).send({status : false , err: "Invalid parameters: Provide a valid college abbreviation"})
+            return 
+        } 
+
+        
+        let ID = temp._id
+        let data = temp
+        
+        // INTERN NAMES CAN HAVE MUTIPLE SPACES COZ THERE CAN BE A NAME CALLED RAHUL KUMAR SHAW SO WE PURPOSELY DID NOT REMOVED THE SPACE.
+        let interns = await InternModel.find({collegeId: ID}).select({_id: 1, name:1,email: 1, mobile: 1})
+        
+        if (interns.length == 0){
+            let details = {name : data.name, fullname : data.fullName, logolink: data.logo, interests : interns}
+            res.status(200).send({status : true , data: details, msg: "No Interns applied for an internship"})
+            return 
+        }
+        
+        
+        let details = {name : data.name, fullname : data.fullName, logolink: data.logo, interests : interns}
+
+        res.status(200).send({status: true, Details: details})
+                
 
     }
 
