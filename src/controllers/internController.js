@@ -32,8 +32,9 @@ const createIntern = async function (req, res) {
 
         if (!isValid(name)) {
             res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide valid name' })
-            return
+            return 
         }
+
 
         if (!isValid(email)) {
             res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide valid email' })
@@ -150,14 +151,15 @@ const getAllInterns = async function (req, res) {
         let data = temp
         
         // INTERN NAMES CAN HAVE MUTIPLE SPACES COZ THERE CAN BE A NAME CALLED RAHUL KUMAR SHAW SO WE PURPOSELY DID NOT REMOVED THE SPACE.
-        let interns = await InternModel.find({collegeId: ID}).select({_id: 1, name:1,email: 1, mobile: 1})
+
+        // including only the one that is NOT Deleted i.e isDeleted -> False 
+        let interns = await InternModel.find({collegeId: ID, isDeleted : false}).select({_id: 1, name:1,email: 1, mobile: 1})
         
         if (interns.length == 0){
             let details = {name : data.name, fullname : data.fullName, logolink: data.logo, interests : interns}
             res.status(200).send({status : true , data: details, msg: "No Interns applied for an internship"})
             return 
         }
-        
         
         let details = {name : data.name, fullname : data.fullName, logolink: data.logo, interests : interns}
 
