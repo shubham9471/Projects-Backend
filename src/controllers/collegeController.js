@@ -28,8 +28,16 @@ const createColleges = async function (req, res) {
             res.status(400).send({status: false, message: 'Name is required'})
             return
         }
-    
+
+        let uniqueName = await collegeModel.findOne({name: temp })
+
+        // Checking if the name is unique 
         
+        if(uniqueName){
+            res.status(400).send({status: false, message: 'Name should be unique'})
+            return
+        }
+    
         // in case there is a spacing in collge abbreviation 
 
         let properspacing = temp.replace(/\s+/g, '') // this will remove all spacing by recursively/ constinously calling regex untill there is no space in b/w
