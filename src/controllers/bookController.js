@@ -33,7 +33,8 @@ const createBook= async function (req, res){
     let saveData = await BookModel.create(data)
              res.send({msg : saveData})
 }
-
+  //REF POPULATE
+  //https://dev.to/paras594/how-to-use-populate-in-mongoose-node-js-mo0
 
    const listBook = async function (req,res){
        let books= await BookModel.find().populate('author', {author_name : 1,  age: 1, _id:1}).populate('publisher')
